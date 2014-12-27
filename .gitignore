@@ -1,0 +1,25 @@
+/.htpasswd
+.sass-cache
+.livereload
+*en conflit*
+*.sublime-*
+
+app/config/database.php
+app/lib/private.php
+
+app/vendor
+composer.lock
+composer.phar
+
+.htpasswd
+
+public/bower_components
+bower_components
+
+sftp-config*.json
+sftp-config.json
+
+node_modules
+
+public/dist
+dist
