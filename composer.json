@@ -1,11 +1,11 @@
 {
-    "require": {
-        "fabpot/goutte": "~2.0",
-        "slim/slim": "~2.5",
-        "jamesmoss/flywheel": "dev-master",
-        "league/plates": "~3.1"
-    },
-    "config": {
-		"vendor-dir": "app/vendor"
-    }
+  "require": {
+    "fabpot/goutte": "~2.0",
+    "slim/slim": "~2.5",
+    "jamesmoss/flywheel": "dev-master",
+    "league/plates": "~3.1"
+  },
+  "config": {
+    "vendor-dir": "app/vendor"
+  }
 }
