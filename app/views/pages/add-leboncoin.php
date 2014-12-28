@@ -1,8 +1,8 @@
-<?php $this->layout('pages/add-checker', ['cssSelector' => $cssSelector]) ?>
+<?php $this->layout('pages/add-webpage', ['cssSelector' => $cssSelector]) ?>
 
 <?php $this->start('form-intro') ?>
-<p>Renseignez l'URL d'une page de recherche leboncoin pour surveiller les annonces.<br>
-Quand le système détecte une nouvelle annonce, vous recevez un mail pour vous notifier.</p>
+<p>Renseignez l'URL d'une page de recherche leboncoin pour surveiller l'arrivée de nouvelles annonces.<br>
+Quand le surveillant voit des petits nouveaux dans le coin, il vous enverra un mail.</p>
 <?php $this->stop('form-intro') ?>
 
 <?php $this->start('form-url') ?>

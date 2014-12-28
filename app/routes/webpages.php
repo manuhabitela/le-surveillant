@@ -4,30 +4,31 @@
 /*
 DB UTILS
  */
-function addChecker($data) {
+function addDocument($data, $type) {
 	global $dbConfig;
-	$checker = new \JamesMoss\Flywheel\Document($data);
-	$id = $dbConfig['checkers']->store($checker);
+	$doc = new \JamesMoss\Flywheel\Document($data);
+    $doc->created = date("Y-m-d H:i");
+	$id = $dbConfig[$type]->store($doc);
 	return $id;
 }
 
-function updateChecker($doc) {
+function updateDocument($doc, $type) {
 	global $dbConfig;
-	$dbConfig['checkers']->update($doc);
+    $doc->modified = date("Y-m-d H:i");
+	$dbConfig[$type]->update($doc);
 }
 
-function deleteChecker($doc) {
+function deleteDocument($doc, $type) {
 	global $dbConfig;
-	return $dbConfig['checkers']->delete($doc);
+	return $dbConfig[$type]->delete($doc);
 }
 
-function checkersList() {
+function documentsList($type) {
 	global $dbConfig;
-
-	$checkers = $dbConfig['checkers']->query()
-		->orderBy('website ASC')
+	$docs = $dbConfig[$type]->query()
+		->orderBy('name ASC')
 		->execute();
-	return $checkers;
+	return $docs;
 }
 
 
@@ -36,8 +37,7 @@ function checkersList() {
 WEBSCRAPING UTILS
  */
 $goutte = new Goutte\Client();
-
-function getContent($url, $css) {
+function getWebpageContent($url, $css) {
 	global $goutte;
 	$website = $goutte->request('GET', $url);
 	return $website->filter($css)->text();
@@ -46,27 +46,16 @@ function getContent($url, $css) {
 /*
 vérifie si du nouveau contenu est présent pour le document donné
  */
-function check($document) {
-	$newContent = getContent($document->url, $document->css);
+function checkWebpage($document) {
+	$newContent = getWebpageContent($document->url, $document->css);
 	if ($newContent !== $document->currentContent) {
 		notifyChange($document);
 
 		$document->currentContent = $newContent;
 	}
 
-	$document->lastCheck = date("Y/m/d H:i");
-	updateChecker($document);
+	updateDocument($document, 'webpage');
 }
-
-$typesCSSMap = [
-    'default' => '',
-    'leboncoin' => '.list-lbc .detail .title'
-];
-
-$typesTemplatesMap = [
-    'default' => 'pages/add-checker',
-    'leboncoin' => 'pages/add-checker-leboncoin'
-];
 
 
 
@@ -87,53 +76,64 @@ function toJSON($app, $content) {
     $response->body( json_encode($content) );
 }
 
+$typesCSSMap = [
+    'default' => '',
+    'leboncoin' => '.list-lbc .detail .title'
+];
+
+$typesTemplatesMap = [
+    'default' => 'pages/add-webpage',
+    'leboncoin' => 'pages/add-leboncoin'
+];
+
 
 
 /*
 LISTE DES SITES
  */
 $app->get('/', function() use ($app, $typesCSSMap) {
-	$checkers = checkersList();
-    foreach ($checkers as $checker) {
-        $type = array_search($checker->css, $typesCSSMap);
+	$webpages = documentsList('webpage');
+    foreach ($webpages as $webpage) {
+        $type = array_search($webpage->css, $typesCSSMap);
         if (!empty($type))
-            $checker->type = $type;
+            $webpage->type = $type;
     }
-	$app->render('pages/checkers-list', ['checkers' => $checkers]);
-})->name('checkers-list');
+	$app->render('pages/webpages-list', ['webpages' => $webpages]);
+})->name('webpages-list');
 
 
 
 /*
 AJOUT D'UN SITE
  */
-$app->get('/add-checker(/:type)', function($type = "default") use ($app, $typesCSSMap, $typesTemplatesMap) {
+$app->get('/add-webpage(/:type)', function($type = "default") use ($app, $typesCSSMap, $typesTemplatesMap) {
 	$cssSelector = $typesCSSMap[$type];
 	$tpl = $typesTemplatesMap[$type];
 	$app->render($tpl, ['cssSelector' => $cssSelector]);
-})->name('checkers-list');
+})->name('webpages-list');
 
-$app->post('/add-checker', function() use ($app) {
+$app->post('/add-webpage', function() use ($app) {
 	$name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
 	$css = filter_input(INPUT_POST, 'css', FILTER_SANITIZE_STRING);
 	$url = filter_input(INPUT_POST, 'url', FILTER_VALIDATE_URL);
 	$mail = filter_input(INPUT_POST, 'mail', FILTER_VALIDATE_EMAIL);
 
 	try {
-		$text = getContent($url, $css);
+		$text = getWebpageContent($url, $css);
 	} catch (Exception $e) {
 		$text = $e->getMessage();
 		$app->flash('danger', 'Sélecteur CSS erronné : '.$text);
-		$app->redirect('/add-checker');
+		$app->redirect('/add-webpage');
 	}
 
-	addChecker([
+	addDocument([
 		'name' => $name,
 		'currentContent' => $text,
 		'lastCheck' => date("Y/m/d H:i"),
 		'css' => $css,
 		'url' => $url,
-		'mail' => $mail]);
+		'mail' => $mail
+    ], 'webpage');
 
 	$app->flash('success', 'Check ajouté !');
 	$app->redirect('/');
@@ -144,9 +144,9 @@ $app->post('/add-checker', function() use ($app) {
 /*
 SUPPRESSION D'UN SITE
  */
-$app->delete('/delete-checker/:id', function($id) use ($app) {
+$app->delete('/delete-webpage/:id', function($id) use ($app) {
 	$id = filter_var($id, FILTER_SANITIZE_STRING);
-	$deleted = deleteChecker($id);
+	$deleted = deleteDocument($id, 'webpage');
 	if ($deleted)
 		$app->flash('success', 'Check supprimé !');
 	if (!$deleted)
@@ -166,7 +166,7 @@ $app->get('/get-content', function() use ($app) {
 	$status = "success";
 	$text = "";
 	try {
-		$text = getContent($url, $css);
+		$text = getWebpageContent($url, $css);
 	} catch (Exception $e) {
 		$status = "error";
 		$text = $e->getMessage();
@@ -179,9 +179,9 @@ $app->get('/get-content', function() use ($app) {
 CHECK TOUS LES SITES
  */
 $app->get('/check', function() use ($app) {
-	$checkers = checkersList();
-	foreach ($checkers as $website) {
-		check($website);
+	$webpages = documentsList('webpage');
+	foreach ($webpages as $website) {
+		checkWebpage($website);
 	}
 	$app->flash('success', 'Sites vérifiés : si ça a bougé, des mails ont été envoyés');
 	$app->redirect('/');

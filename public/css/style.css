@@ -1,5 +1,53 @@
 @import "../bower_components/bootstrap/dist/css/bootstrap.css";
 
+body {
+  background-color: #ddd;
+}
+
+a {
+  color: #ff5722;
+}
+
+a:hover, a:focus {
+  color: #D84C1F;
+}
+
+.navbar {
+  border-bottom: 1px solid #ff5722;
+}
+
+.container {
+  background: #f6f6f6;
+  border: 1px solid #aaa;
+  margin: 30px auto;
+  padding-bottom: 15px;
+}
+
+.nav>li>a:hover, .nav>li>a:focus,
+.nav .open>a, .nav .open>a:hover, .nav .open>a:focus,
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus {
+  background-color: #FDE9C5
+}
+
+.btn-default {
+  background-color: #ff5722;
+  border-color: #D84C1F;
+  color: white;
+}
+
+.form-control,
+.btn,
+.navbar {
+  border-radius: 0;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #D84C1F;
+}
+
+
+
 .halp {
 	text-decoration: none;
 	border-bottom: 1px dotted #444;

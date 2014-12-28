@@ -1,9 +1,9 @@
 <?php $this->layout('layout/default') ?>
 
-<form action="/add-checker" method="post">
+<form action="/add-webpage" method="post">
 	<?php if ($this->section('form-intro')): echo $this->section('form-intro'); else: ?>
 	<p>Renseignez une page web et un sélecteur CSS dont vous voulez surveiller le contenu.<br>
-	Quand le contenu correspondant au sélecteur CSS donné change, vous recevez un mail pour vous notifier.</p>
+	Quand le contenu correspondant au sélecteur CSS donné change, le surveillant s'empresse de cafter la chose en vous envoyant un mail.</p>
 	<?php endif ?>
 
 	<div class="form-group">
