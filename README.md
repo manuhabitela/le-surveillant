@@ -2,6 +2,8 @@
 
 Le surveillant garde à l'oeil des pages web et vous notifie quand l'une d'elle bouge un petit doigt. Ça déconne pas.
 
+![Gueule du surveillant](https://raw.githubusercontent.com/Leimi/le-surveillant/master/preview.png)
+
 ## Installation
 
 Requis : `composer`, `bower`.
