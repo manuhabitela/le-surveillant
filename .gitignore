@@ -21,7 +21,5 @@ sftp-config.json
 
 node_modules
 
-public/dist
-dist
 
 app/db

@@ -11,9 +11,7 @@
         <meta name="description" content="<?php echo !empty($description) ? $description : APP_DESC ?>">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- dev : /css/style.css -->
-        <?php $this->css = PROD ? '/dist/style.min.css?v=957465612021901' : '/dist/style.css?v='.time() ?>
-        <link rel="stylesheet" href="<?php echo $this->css ?>">
+        <link rel="stylesheet" href="/dist/style.css">
     </head>
     <body>
         <!--[if lte IE 8]>
@@ -32,16 +30,11 @@
             <?php echo $this->section('content') ?>
         </div>
 
-        <!-- dev : /js/script.js -->
-        <?php $this->js = PROD ? '/js/script.min.js?v=58797562341' :
-        ['/bower_components/jquery/dist/jquery.js',
+        <?php $js = ['/bower_components/jquery/dist/jquery.js',
         '/bower_components/bootstrap/dist/js/bootstrap.min.js',
         '/js/script.js'];
-        $t = time();
-        if (is_string($this->js)): ?>
-        <script src="<?php echo $this->js ?>"></script>
-        <?php else: foreach ($this->js as $script): ?>
-            <script src="<?php echo $script ?>?v=<?php echo $t ?>"></script>
-        <?php endforeach; endif; ?>
+        foreach ($js as $script): ?>
+            <script src="<?php echo $script ?>"></script>
+        <?php endforeach; ?>
     </body>
 </html>
