@@ -37,7 +37,8 @@ a:hover, a:focus {
 
 .form-control,
 .btn,
-.navbar {
+.navbar,
+.alert {
   border-radius: 0;
 }
 
